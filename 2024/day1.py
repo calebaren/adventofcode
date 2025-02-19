@@ -8,7 +8,6 @@ rights = []
 # sort left and right
 with open("day1.txt") as file:
 	for line in file:
-		# print(re.split(r'\s+', line.rstrip()))
 		processed_str = line.rstrip().split(" ")
 		lefts.append(int(processed_str[0]))
 		rights.append(int(processed_str[-1]))
