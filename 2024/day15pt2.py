@@ -1,4 +1,4 @@
-#day15 pt1
+# day15 pt2
 with open("day15_moves.txt") as file:
 	# read in the moves
 	moves = ''.join(line.rstrip() for line in file.read())
@@ -21,60 +21,6 @@ def get_robot(grid):
 			if grid[i][j] == "@":
 				return (i,j)
 
-def simulate(moves, grid):
-	def process_step(move, grid):
-		nonlocal x, y
-		dx, dy = DIRECTIONS[move]
-		nx, ny = x+dx, y+dy
-
-		# hit a wall
-		if grid[nx][ny] == "#":
-			# position keeps the same
-			return grid
-
-		# hit a box.
-		boxes = []
-		i = 1
-		while grid[x+(i*dx)][y+(i*dy)] == "O":
-			# if there are more boxes in the stack, we should append them to the row_box.
-			boxes.append((x+(i*dx),y+(i*dy)))
-			i += 1
-
-		# if the last one is a wall, then we do nothing.
-		if grid[x+(i*dx)][y+(i*dy)] == "#":
-			return grid
-
-		# we've hit an empty square. 
-		# moves the first box to the end.
-		grid[x+(i*dx)][y+(i*dy)] = "O"
-		grid[x+dx][y+dy] = "."
-
-		# advances robot.
-		grid[x][y] = "."
-		grid[nx][ny] = "@"
-		x,y = nx, ny
-		return grid
-
-	# store the robot's position
-	x, y = get_robot(grid)
-	for m in moves:
-		grid = process_step(m, grid)
-	return grid
-
-# driver
-def get_GPS(moves, grid):
-	final_grid = simulate(moves, grid)
-	m, n = len(grid), len(grid[0])
-	res = 0
-	for i in range(m):
-		for j in range(n):
-			if final_grid[i][j] == "O":
-				res += 100*i +j
-	return res
-
-print(f'Final sum of GPS coordinates: {get_GPS(moves, grid)}')
-
-# day15 pt2
 # now the map can move 2 at once.
 def simulate_2(moves, grid):
 	def double_grid(grid):
@@ -170,12 +116,26 @@ def simulate_2(moves, grid):
 
 	# store the robot's position
 	x, y = get_robot(expanded_grid)
-	print(*map(lambda x: ''.join(x), expanded_grid), sep='\n')
+	# print(*map(lambda x: ''.join(x), expanded_grid), sep='\n')
 	for m in moves:
-		print(f'~~~~~~~~~~~~~~ {m} ~~~~~~~~~~~')
+		# print(f'~~~~~~~~~~~~~~ {m} ~~~~~~~~~~~')
 		expanded_grid = process_step(m, expanded_grid)
-		print(*map(lambda x: ''.join(x), expanded_grid), sep='\n')
+		# print(*map(lambda x: ''.join(x), expanded_grid), sep='\n')
 	# for m in moves:
 	# 	process_step(m)
 	return expanded_grid
-simulate_2(moves, grid)
+
+# driver
+def get_GPS(moves, grid):
+	final_grid = simulate_2(moves, grid)
+	print(*map(lambda x: ''.join(x), final_grid), sep='\n')
+
+	m, n = len(grid), len(grid[0])
+	res = 0
+	for i in range(m):
+		for j in range(n):
+			if final_grid[i][j] == "O":
+				res += 100*i +j
+	return res
+
+print(f'Final sum of GPS coordinates after doubling: {get_GPS(moves, grid)}')
